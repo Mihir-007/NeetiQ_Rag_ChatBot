@@ -43,7 +43,7 @@ google-genai>=1.0.0
 # -------------------------
 sentence-transformers==3.0.1
 transformers==4.45.2
-torch==2.4.1
+torch==2.5.1
 huggingface-hub>=0.24.0
 
 # -------------------------

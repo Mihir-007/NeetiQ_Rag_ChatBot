@@ -35,36 +35,65 @@ def apply_database_url_settings(db_url: str, settings) -> None:
 class RetrievalService:
     def __init__(self, db: AsyncSession):
         self.db = db
+
         # Set Team B's settings to match backend DB settings
         from retrieval.config.settings import Settings
         from app.core.settings import get_settings
+
         app_settings = get_settings()
-        
+
         # Override DB settings for Team B's raw psycopg connection
         db_url = app_settings.DATABASE_URL
+
         if db_url:
             import urllib.parse
-            # Change postgresql+asyncpg:// to postgresql:// so urlparse handles it correctly
-            parse_url = db_url.replace("postgresql+asyncpg://", "postgresql://")
+
+            parse_url = db_url.replace(
+                "postgresql+asyncpg://",
+                "postgresql://"
+            )
+
             parsed = urllib.parse.urlparse(parse_url)
-            
+
             Settings.DB_USER = parsed.username
             Settings.DB_PASSWORD = parsed.password
             Settings.DB_HOST = parsed.hostname
             Settings.DB_PORT = parsed.port if parsed.port else 5432
-            Settings.DB_NAME = parsed.path.lstrip('/')
+            Settings.DB_NAME = parsed.path.lstrip("/")
+
         else:
             Settings.DB_NAME = "legal_rag"
-            
-        Settings.TOP_K = 5
-        
-        self.retriever = Retriever()
 
-    async def full_retrieve(self, query: str, top_k: int = 5) -> List[RetrievalResult]:
-        # Team B's retriever is synchronous, run in executor
+        Settings.TOP_K = 5
+
+        # Lazy initialization
+        self.retriever = None
+
+    def _get_retriever(self):
+        if self.retriever is None:
+            self.retriever = Retriever()
+        return self.retriever
+
+    async def full_retrieve(
+        self,
+        query: str,
+        top_k: int = 5,
+    ) -> List[RetrievalResult]:
+
         import asyncio
+
         loop = asyncio.get_event_loop()
-        results = await loop.run_in_executor(None, self.retriever.retrieve, query, top_k)
-        
-        # results are dicts matching RetrievalResult perfectly thanks to our schema update
-        return [RetrievalResult(**r) for r in results]
+
+        retriever = self._get_retriever()
+
+        results = await loop.run_in_executor(
+            None,
+            retriever.retrieve,
+            query,
+            top_k,
+        )
+
+        return [
+            RetrievalResult(**r)
+            for r in results
+        ]

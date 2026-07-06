@@ -24,3 +24,9 @@ api_router.include_router(extraction_router, prefix="/extraction", tags=["Extrac
 api_router.include_router(retrieval_router, prefix="/retrieval", tags=["Retrieval"])
 api_router.include_router(chat_router, prefix="/chat", tags=["Chat"])
 _trace("api/v1/__init__.py: Finished")
+
+from .health import router as health_router
+router.include_router(
+    health_router,
+    tags=["Health"]
+)

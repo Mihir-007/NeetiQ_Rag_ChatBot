@@ -42,7 +42,17 @@ class EmbeddingModel:
                     flush=True
                 )
 
+                builtins.print("Importing torch...", flush=True)
+                import torch
+                builtins.print(f"Torch version: {torch.__version__}", flush=True)
+
+                builtins.print("Importing transformers...", flush=True)
+                import transformers
+                builtins.print(f"Transformers version: {transformers.__version__}", flush=True)
+
+                builtins.print("Importing sentence_transformers...", flush=True)
                 from sentence_transformers import SentenceTransformer
+                builtins.print("SentenceTransformer imported", flush=True)
 
                 builtins.print(
                     "EmbeddingModel.get_model: SentenceTransformer imported",
@@ -55,7 +65,8 @@ class EmbeddingModel:
                 )
 
                 cls._model = SentenceTransformer(
-                    Settings.EMBEDDING_MODEL
+                    Settings.EMBEDDING_MODEL,
+                    device="cpu"
                 )
 
                 builtins.print(

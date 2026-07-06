@@ -19,7 +19,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a plaintext password using bcrypt."""
+    print("TYPE:", type(password), flush=True)
+    print("PASSWORD:", repr(password), flush=True)
+    print("LENGTH:", len(password), flush=True)
     return pwd_context.hash(password)
 
 

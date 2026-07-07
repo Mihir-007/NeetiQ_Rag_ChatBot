@@ -69,6 +69,7 @@ class EmbeddingModel:
                     Settings.EMBEDDING_MODEL,
                     device="cpu",
                     cache_folder="/tmp/huggingface"
+                    trust_remote_code=False,
                 )
                 print("SentenceTransformer created", flush=True)
 

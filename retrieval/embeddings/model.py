@@ -68,7 +68,7 @@ class EmbeddingModel:
                 cls._model = SentenceTransformer(
                     Settings.EMBEDDING_MODEL,
                     device="cpu",
-                    cache_folder="/tmp/huggingface"
+                    cache_folder="/tmp/huggingface",
                     trust_remote_code=False,
                 )
                 print("SentenceTransformer created", flush=True)

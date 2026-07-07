@@ -40,7 +40,15 @@ async def chat(
     context = [] # Let pipeline handle retrieval directly!
     
     try:
-        response_msg, citations = await rag_service.generate_response(request.message, context, history)
+        print("CHAT: Before generate_response", flush=True)
+
+        response_msg, citations = await rag_service.generate_response(
+            request.message,
+            context,
+            history
+        )
+
+        print("CHAT: After generate_response", flush=True)
     except HTTPException:
         raise
     except ValueError as e:

@@ -15,10 +15,20 @@ class Embedder:
         if not text or not text.strip():
             raise ValueError("Input text cannot be empty.")
 
-        embedding = self._get_model().encode(
+        print("Embedder: getting model", flush=True)
+
+        model = self._get_model()
+
+        print("Embedder: model obtained", flush=True)
+
+        print("Embedder: starting encode", flush=True)
+
+        embedding = model.encode(
             text,
             normalize_embeddings=True,
         )
+
+        print("Embedder: encoding finished", flush=True)
 
         return embedding.tolist()
 

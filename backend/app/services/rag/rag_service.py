@@ -43,6 +43,29 @@ class RagService:
 
         def run_pipeline():
 
+            print("PIPELINE: started", flush=True)
+
+            print("PIPELINE: getting retriever", flush=True)
+            retriever = self.retrieval_service._get_retriever()
+            print("PIPELINE: retriever ready", flush=True)
+
+            print("PIPELINE: starting retrieval", flush=True)
+
+            print("PIPELINE: started", flush=True)
+
+            print("PIPELINE: getting retriever", flush=True)
+            retriever = self.retrieval_service._get_retriever()
+
+            print("PIPELINE: retriever ready", flush=True)
+
+            print("PIPELINE: retrieving...", flush=True)
+            results_dicts = retriever.retrieve(
+                query,
+                top_k=5
+            )
+
+            print("PIPELINE: retrieval finished", flush=True)
+
             # Lazy initialize retriever
             retriever = self.retrieval_service._get_retriever()
 
@@ -51,6 +74,7 @@ class RagService:
                 query,
                 top_k=5
             )
+            print("PIPELINE: retrieval complete", flush=True)
 
             print("\n" + "=" * 80)
             print("Retrieved", len(results_dicts), "chunks")

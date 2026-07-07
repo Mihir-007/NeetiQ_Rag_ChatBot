@@ -64,10 +64,13 @@ class EmbeddingModel:
                     flush=True
                 )
 
+                print("About to create SentenceTransformer", flush=True)
                 cls._model = SentenceTransformer(
                     Settings.EMBEDDING_MODEL,
-                    device="cpu"
+                    device="cpu",
+                    cache_folder="/tmp/huggingface"
                 )
+                print("SentenceTransformer created", flush=True)
 
                 builtins.print(
                     "EmbeddingModel.get_model: model loaded",

@@ -25,6 +25,19 @@ class Settings(BaseSettings):
         if not v:
             raise ValueError("DATABASE_URL environment variable is missing. A valid database connection string is required.")
         
+        import builtins
+        def mask_url(url_str: str) -> str:
+            if not url_str: return ""
+            try:
+                import urllib.parse
+                parsed = urllib.parse.urlparse(url_str)
+                if parsed.password:
+                    return url_str.replace(parsed.password, "******")
+            except: pass
+            return url_str
+
+        builtins.print(f"validate_database_url: Input URL = {mask_url(v)}", flush=True)
+
         env = info.data.get("ENVIRONMENT", "production")
         if env == "production":
             if "localhost" in v or "127.0.0.1" in v:
@@ -39,13 +52,16 @@ class Settings(BaseSettings):
         elif v.startswith("postgresql://"):
             v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
             
-        if "sslmode=" in v:
+        if "sslmode=require" in v:
+            v = v.replace("sslmode=require", "ssl=true")
+        elif "sslmode=" in v:
             v = v.replace("sslmode=", "ssl=")
         if "channel_binding=" in v:
             v = v.replace("&channel_binding=require", "")
             v = v.replace("?channel_binding=require&", "?")
             v = v.replace("?channel_binding=require", "")
             
+        builtins.print(f"validate_database_url: Output URL = {mask_url(v)}", flush=True)
         return v
     
     # Storage
@@ -65,6 +81,8 @@ class Settings(BaseSettings):
     RETRIEVAL_TOP_K: int = 5
     RERANKER_MODEL_NAME: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
     RERANKER_TOP_K: int = 3
+    EMBEDDING_SERVICE_URL: str = "http://localhost:7860"
+    EMBEDDING_SERVICE_API_KEY: str = ""
     
     # Pinecone Vector DB
     PINECONE_API_KEY: str

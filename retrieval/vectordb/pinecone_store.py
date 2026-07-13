@@ -15,18 +15,22 @@ class PineconeStore:
     """
 
     def __init__(self):
-        import builtins
-        builtins.print("PineconeStore.__init__: Initializing Pinecone", flush=True)
-        self.pc = Pinecone(api_key=Settings.PINECONE_API_KEY)
-        builtins.print("PineconeStore.__init__: Pinecone initialized", flush=True)
-        self.index_name = Settings.PINECONE_INDEX_NAME
-        builtins.print("PineconeStore.__init__: calling _create_index", flush=True)
-        self._create_index()
-        builtins.print("PineconeStore.__init__: Done", flush=True)
+        import sys
+        import os
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+        from backend.app.core.diagnostic_logger import Profiler
+        
+        with Profiler("Pinecone client initialization"):
+            self.pc = Pinecone(api_key=Settings.PINECONE_API_KEY)
+            self.index_name = Settings.PINECONE_INDEX_NAME
+            
+        with Profiler("Pinecone create_index check"):
+            self._create_index()
 
-        self.index = self.pc.Index(
-            self.index_name
-        )
+        with Profiler("Pinecone self.pc.Index"):
+            self.index = self.pc.Index(
+                self.index_name
+            )
 
     def _create_index(self):
         """
@@ -87,12 +91,17 @@ class PineconeStore:
         """
         Perform semantic similarity search.
         """
+        import sys
+        import os
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+        from backend.app.core.diagnostic_logger import Profiler
 
-        response = self.index.query(
-            vector=query_embedding,
-            top_k=top_k,
-            include_metadata=True,
-        )
+        with Profiler("Pinecone query"):
+            response = self.index.query(
+                vector=query_embedding,
+                top_k=top_k,
+                include_metadata=True,
+            )
 
         results = []
 

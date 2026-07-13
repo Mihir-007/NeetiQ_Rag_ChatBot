@@ -1,44 +1,43 @@
 from typing import List
-from retrieval.embeddings.model import EmbeddingModel
+
+from retrieval.embeddings.client import EmbeddingClient
 
 
 class Embedder:
-    def __init__(self):
-        self._model = None
+    """
+    Handles embedding generation using the external embedding service.
+    """
 
-    def _get_model(self):
-        if self._model is None:
-            self._model = EmbeddingModel.get_model()
-        return self._model
+    def __init__(self):
+        """Initialize the embedder with the shared HTTP client."""
+        self.client = EmbeddingClient()
 
     def encode(self, text: str) -> List[float]:
+        """
+        Generate an embedding for a single text.
+
+        Args:
+            text (str): Input text.
+
+        Returns:
+            List[float]: Embedding vector.
+        """
         if not text or not text.strip():
             raise ValueError("Input text cannot be empty.")
 
-        print("Embedder: getting model", flush=True)
-
-        model = self._get_model()
-
-        print("Embedder: model obtained", flush=True)
-
-        print("Embedder: starting encode", flush=True)
-
-        embedding = model.encode(
-            text,
-            normalize_embeddings=True,
-        )
-
-        print("Embedder: encoding finished", flush=True)
-
-        return embedding.tolist()
+        return self.client.encode(text)
 
     def encode_batch(self, texts: List[str]) -> List[List[float]]:
+        """
+        Generate embeddings for multiple texts.
+
+        Args:
+            texts (List[str]): List of input texts.
+
+        Returns:
+            List[List[float]]: List of embedding vectors.
+        """
         if not texts:
             raise ValueError("Input text list cannot be empty.")
 
-        embeddings = self._get_model().encode(
-            texts,
-            normalize_embeddings=True,
-        )
-
-        return embeddings.tolist()
+        return self.client.encode_batch(texts)
